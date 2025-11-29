@@ -1,0 +1,3 @@
+# Pre-commit hook - add your checks here
+# Example: npm run lint
+echo "Pre-commit hook passed"

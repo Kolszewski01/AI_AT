@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "ai-trading-system",
   "version": "0.1.0",
   "private": true,
@@ -8,18 +8,16 @@
     "dev:mobile": "cd mobile_app && flutter run",
     "dev:desktop": "cd desktop_app && venv\\Scripts\\activate && python main.py",
     "help": "echo 'Backend uruchom w OSOBNYM terminalu WSL: uvicorn app.main:app --reload --host 0.0.0.0'",
-
     "// --- 2. AUTOMATYZACJA (API SYNC) ---": "",
     "sync": "npm run sync:mobile && npm run sync:desktop",
-    "sync:mobile": "openapi-generator-cli generate -i http://localhost:8000/openapi.json -g dart -o mobile_app/lib/api_client --additional-properties=pubName=backend_api",
-    "sync:desktop": "openapi-generator-cli generate -i http://localhost:8000/openapi.json -g python -o desktop_app/src/api_client --additional-properties=packageName=backend_api",
-
+    "sync:mobile": "openapi-generator-cli generate -i http://localhost:8000/api/openapi.json -g dart -o mobile_app/lib/api_client --additional-properties=pubName=backend_api",
+    "sync:desktop": "openapi-generator-cli generate -i http://localhost:8000/api/openapi.json -g python -o desktop_app/src/api_client --additional-properties=packageName=backend_api",
     "// --- 3. UTILITIES ---": "",
     "connect:phone": "adb reverse tcp:8000 tcp:8000 && echo '✅ Port 8000 forwarded via USB'",
-    
     "// --- 4. GIT & RELEASE ---": "",
     "commit": "cz",
-    "release": "release-it"
+    "release": "release-it",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.0",
