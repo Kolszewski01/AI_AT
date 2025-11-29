@@ -1,0 +1,51 @@
+# AI Trading Desktop App - Change Log
+# ====================================
+
+## [0.2.1] - 2025-11-27
+
+### Fixed
+- Backend issues resolved (backend updated to v0.2.0)
+  - TA-Lib installed - all technical analysis endpoints working
+  - feedparser installed - news endpoint working
+- Removed "Known Issues" from documentation - all endpoints functional
+
+### Notes
+- Backend running on WSL: http://localhost:8000
+- All API endpoints tested and working
+
+---
+
+## [0.2.0] - 2025-11-27
+
+### Added
+- **Logging System** - Complete logging infrastructure for debugging and monitoring
+  - New module: `src/utils/logger.py`
+  - Rotating file logs in `logs/` directory (5MB max, 5 backups)
+  - Console output with timestamps and log levels
+  - Child loggers for each module with proper propagation
+
+### Changed
+- `main.py` - Added logging for application lifecycle (start, config load, exit)
+- `src/services/api_client.py` - Added logging for all HTTP requests/responses and errors
+- `src/services/websocket_client.py` - Added logging for WS connections, messages, disconnections
+- `src/components/main_window.py` - Added logging for initialization, symbol selection, API checks
+- `src/components/chart_widget.py` - Added logging for data loading and chart updates
+- `src/components/watchlist_panel.py` - Added logging for quote updates and errors
+- `src/components/alerts_panel.py` - Added logging for alerts refresh and WebSocket alerts
+
+### Fixed
+- Replaced all `print()` statements with proper logger calls
+
+---
+
+## [0.1.0] - 2025-11-18
+
+### Initial Release
+- PyQt6-based desktop application
+- Interactive Plotly candlestick charts
+- Real-time WebSocket market data
+- Watchlist panel with price updates
+- Alerts panel with severity levels
+- Drawing tools (Fibonacci, trendlines, horizontal lines)
+- Dark theme UI
+- Configuration via .env file

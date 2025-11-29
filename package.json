@@ -1,0 +1,52 @@
+﻿{
+  "name": "ai-trading-system",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Hybrid Monorepo Controller",
+  "scripts": {
+    "// --- 1. START DEWELOPERSKI ---": "",
+    "dev:mobile": "cd mobile_app && flutter run",
+    "dev:desktop": "cd desktop_app && venv\\Scripts\\activate && python main.py",
+    "help": "echo 'Backend uruchom w OSOBNYM terminalu WSL: uvicorn app.main:app --reload --host 0.0.0.0'",
+
+    "// --- 2. AUTOMATYZACJA (API SYNC) ---": "",
+    "sync": "npm run sync:mobile && npm run sync:desktop",
+    "sync:mobile": "openapi-generator-cli generate -i http://localhost:8000/openapi.json -g dart -o mobile_app/lib/api_client --additional-properties=pubName=backend_api",
+    "sync:desktop": "openapi-generator-cli generate -i http://localhost:8000/openapi.json -g python -o desktop_app/src/api_client --additional-properties=packageName=backend_api",
+
+    "// --- 3. UTILITIES ---": "",
+    "connect:phone": "adb reverse tcp:8000 tcp:8000 && echo '✅ Port 8000 forwarded via USB'",
+    
+    "// --- 4. GIT & RELEASE ---": "",
+    "commit": "cz",
+    "release": "release-it"
+  },
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.13.0",
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^9.0.0",
+    "release-it": "^17.0.0",
+    "@release-it/conventional-changelog": "^8.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore(release): v",
+      "tagName": "v"
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular",
+        "infile": "CHANGELOG.md"
+      }
+    }
+  }
+}

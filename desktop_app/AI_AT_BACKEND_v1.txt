@@ -1,0 +1,191 @@
+# AI Trading System - Sesja WSL - Podsumowanie
+Data: 2025-11-27
+
+## Co zostało zrobione:
+
+### 1. REPOZYTORIA GITHUB - Utworzone i wypchnięte
+
+**Backend:**
+- Repo: https://github.com/Kolszewski01/AI_AT_BACKEND.git
+- Branch: master
+- 37 plików, 3447 linii + 38 plików dodatkowych (9919 linii)
+- Pełny backend z FastAPI, analiza techniczna, NLP, alerty, backtesting
+
+**Desktop App:**
+- Repo: https://github.com/Kolszewski01/AI_AT_DESKTOP.git
+- Branch: master
+- 16 plików, 1905 linii
+- PyQt6 desktop app z wykresami, WebSocket, API client
+
+**Mobile App:**
+- Repo: https://github.com/Kolszewski01/AI_AT_MOBILE.git
+- Branch: master
+- 17 plików, 3368 linii
+- Flutter mobile app
+
+### 2. KONFIGURACJA SSH DLA GITHUB (WSL)
+
+**Lokalizacja:** ~/.ssh/
+
+**Pliki:**
+- `id_ed25519_github` - klucz prywatny dla GitHub
+- `id_ed25519_github.pub` - klucz publiczny (dodany do GitHub)
+- `config` - konfiguracja SSH
+
+**SSH Config (~/.ssh/config):**
+```
+# GitHub configuration - personal projects
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_github
+    IdentitiesOnly yes
+```
+
+**Ten setup NIE KOLIDUJE z GitLabem firmowym** - każdy host używa osobnego klucza.
+
+### 3. BACKEND - URUCHOMIONY NA WSL
+
+**Lokalizacja:** /home/user/projekty/Agent_Trading/backend
+
+**Status:** ✅ DZIAŁA na http://0.0.0.0:8000
+
+**Co zostało zrobione:**
+1. Utworzono virtual environment (venv/)
+2. Zainstalowano dependencies (główne paczki - fastapi, uvicorn, yfinance, ccxt, pandas, etc.)
+3. Serwer uruchomiony w tle z auto-reload
+
+**Jak uruchomić backend (WSL):**
+```bash
+cd /home/user/projekty/Agent_Trading/backend
+source venv/bin/activate
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+**API Endpoints:**
+- http://localhost:8000/api/docs - Swagger UI
+- http://localhost:8000/api/redoc - ReDoc
+- http://localhost:8000/api/v1/market - Market data
+- http://localhost:8000/api/v1/analysis - Technical analysis
+- http://localhost:8000/api/v1/alerts - Alerts
+- http://localhost:8000/api/v1/news - News
+
+**Zainstalowane główne paczki:**
+- fastapi==0.109.0
+- uvicorn[standard]==0.27.0
+- pandas, numpy
+- yfinance, ccxt
+- python-telegram-bot
+- celery, apscheduler
+- sqlalchemy, redis
+- beautifulsoup4, requests
+
+**Paczki pominięte (problemy z instalacją):**
+- ta-lib (wymaga C libraries)
+- pandas-ta (brak wersji 0.3.14b0)
+- transformers, torch (ML - duże, opcjonalne)
+
+### 4. STRUKTURA PROJEKTU
+
+```
+Agent_Trading/
+├── backend/              # ✅ Git repo + GitHub + RUNNING
+│   ├── .git/
+│   ├── venv/            # Virtual environment
+│   ├── app/
+│   │   ├── main.py      # FastAPI app
+│   │   ├── api/endpoints/
+│   │   ├── core/
+│   │   ├── services/
+│   │   └── database/
+│   ├── tests/
+│   ├── requirements.txt
+│   └── .gitignore
+│
+├── desktop_app/         # ✅ Git repo + GitHub
+│   ├── .git/
+│   ├── src/
+│   ├── main.py
+│   └── requirements.txt
+│
+└── mobile_app/          # ✅ Git repo + GitHub
+    ├── .git/
+    ├── lib/
+    └── pubspec.yaml
+```
+
+### 5. NASTĘPNE KROKI - DESKTOP APP NA WINDOWS
+
+**Desktop app wymaga:**
+- Python 3.10+ (na Windows)
+- PyQt6
+- Połączenie z backendem (który działa na WSL)
+
+**Plan uruchomienia na Windows:**
+1. Sklonować repo: git clone https://github.com/Kolszewski01/AI_AT_DESKTOP.git
+2. Utworzyć venv: python -m venv venv
+3. Aktywować: venv\Scripts\activate
+4. Zainstalować: pip install -r requirements.txt
+5. Skonfigurować adres backendu (WSL IP: localhost lub 127.0.0.1:8000)
+6. Uruchomić: python main.py
+
+**Adres backendu z Windows:**
+- Backend w WSL jest dostępny na: http://localhost:8000
+- WSL2 automatycznie forwarduje porty do Windows
+
+### 6. WAŻNE INFORMACJE
+
+**Git w projektach:**
+- Każdy folder (backend, desktop_app, mobile_app) ma osobne git repo
+- Wszystkie używają SSH do GitHub
+- Commity BEZ wzmianek o Claude (na życzenie usera)
+
+**Backend w WSL:**
+- Proces działa w tle (ID: 37b654)
+- Auto-reload włączony (watchfiles)
+- Aby zatrzymać: Ctrl+C lub kill process
+
+**Brakujące features (do doinstalowania w przyszłości):**
+- TA-Lib dla pełnej analizy technicznej
+- Transformers + FinBERT dla NLP
+- Torch dla ML
+- Local LLM integration (langchain)
+
+### 7. PODSUMOWANIE SESJI
+
+✅ Utworzono 3 repozytoria GitHub
+✅ Skonfigurowano SSH dla GitHub (nie koliduje z GitLabem)
+✅ Backend uruchomiony na WSL:8000
+✅ Wszystkie foldery mają git + remote
+✅ Force push wykonany dla backendu (aktualna wersja)
+
+**Następna sesja (Windows):**
+- Uruchomienie desktop app
+- Połączenie z backendem WSL
+- Testowanie komunikacji WebSocket
+
+---
+
+## Komendy do skopiowania (Windows):
+
+```bash
+# Sklonuj desktop app
+git clone https://github.com/Kolszewski01/AI_AT_DESKTOP.git
+cd AI_AT_DESKTOP
+
+# Utwórz venv
+python -m venv venv
+venv\Scripts\activate
+
+# Zainstaluj dependencies
+pip install -r requirements.txt
+
+# Uruchom
+python main.py
+```
+
+---
+
+**Autor:** Sesja z Claude Code w WSL
+**Status backendu:** RUNNING na WSL (port 8000)
+**Gotowe do uruchomienia desktop app na Windows**

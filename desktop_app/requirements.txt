@@ -1,0 +1,32 @@
+# PyQt6 and GUI
+PyQt6==6.6.1
+PyQt6-WebEngine==6.6.0
+PyQtWebEngine==5.15.6
+
+# Plotting and visualization
+plotly==5.18.0
+mplfinance==0.12.10b0
+matplotlib==3.8.2
+pandas==2.1.4
+numpy==1.26.3
+
+# HTTP client for API
+requests==2.31.0
+httpx==0.26.0
+
+# WebSocket client
+websockets==12.0
+python-socketio==5.11.0
+
+# Data handling
+python-dateutil==2.8.2
+pytz==2024.1
+
+# Configuration
+python-dotenv==1.0.0
+
+# Icons and resources
+qtawesome==1.3.0
+
+# Development
+black==24.1.1
