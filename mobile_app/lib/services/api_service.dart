@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/signal.dart';
 import '../models/market_data.dart';
 import '../models/alert.dart';
+import '../utils/app_logger.dart';
 
 class ApiService {
   static const String baseUrl = 'http://localhost:8000/api';
@@ -13,17 +14,24 @@ class ApiService {
   ApiService._internal();
 
   final http.Client _client = http.Client();
+  final _logger = AppLogger('ApiService');
 
   // Market Data endpoints
   Future<MarketData> getMarketData(String symbol, String timeframe) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/market-data/$symbol?timeframe=$timeframe'),
-    );
+    final url = '$baseUrl/market-data/$symbol?timeframe=$timeframe';
+    try {
+      final response = await _client.get(Uri.parse(url));
 
-    if (response.statusCode == 200) {
-      return MarketData.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to load market data');
+      if (response.statusCode == 200) {
+        _logger.debug('getMarketData success', {'symbol': symbol});
+        return MarketData.fromJson(json.decode(response.body));
+      } else {
+        _logger.apiCall('GET', url, statusCode: response.statusCode, error: response.body);
+        throw Exception('Failed to load market data: ${response.statusCode}');
+      }
+    } catch (e, stackTrace) {
+      _logger.error('getMarketData failed', error: e, stackTrace: stackTrace, context: {'symbol': symbol});
+      rethrow;
     }
   }
 

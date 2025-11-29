@@ -6,7 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
 from app.core.config import settings
-from app.api.endpoints import market_data, analysis, alerts, websocket, news, backtest, risk_management
+from app.core.logger import get_logger
+from app.core.error_middleware import ErrorLoggingMiddleware
+from app.api.endpoints import market_data, analysis, alerts, websocket, news, backtest, risk_management, client_errors
+
+logger = get_logger(__name__)
 
 # Create FastAPI app
 app = FastAPI(
@@ -29,6 +33,9 @@ app.add_middleware(
 
 # GZip compression
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# Error logging middleware (must be added after other middleware)
+app.add_middleware(ErrorLoggingMiddleware)
 
 # Include routers
 app.include_router(
@@ -65,20 +72,26 @@ app.include_router(
     prefix="/api/v1/risk",
     tags=["risk_management"]
 )
+app.include_router(
+    client_errors.router,
+    prefix="/api/v1/errors",
+    tags=["errors"]
+)
 
 
 @app.on_event("startup")
 async def startup_event():
     """Run on application startup"""
-    print(f"🚀 Starting {settings.PROJECT_NAME} v{settings.VERSION}")
-    print(f"📊 Environment: {settings.ENVIRONMENT}")
-    print(f"🔗 Docs available at: http://localhost:8000/api/docs")
+    logger.info(f"Starting {settings.PROJECT_NAME} v{settings.VERSION}")
+    logger.info(f"Environment: {settings.ENVIRONMENT}")
+    logger.info(f"Log level: {settings.LOG_LEVEL}")
+    logger.info(f"Docs available at: http://localhost:8000/api/docs")
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Run on application shutdown"""
-    print("👋 Shutting down AI Trading System")
+    logger.info("Shutting down AI Trading System")
 
 
 @app.get("/", tags=["root"])

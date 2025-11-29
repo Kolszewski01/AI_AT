@@ -15,12 +15,16 @@ import 'screens/settings_screen.dart';
 import 'services/api_service.dart';
 import 'services/websocket_service.dart';
 import 'utils/theme.dart';
+import 'utils/app_logger.dart';
+
+// App-wide logger
+final _logger = AppLogger('Main');
 
 // Background message handler
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print('Handling background message: ${message.messageId}');
+  _logger.info('Handling background message: ${message.messageId}');
 }
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -28,6 +32,10 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Setup global error handling
+  setupGlobalErrorHandling();
+  _logger.info('App starting...');
 
   // Initialize Firebase
   await Firebase.initializeApp();
@@ -47,7 +55,7 @@ void main() async {
   await flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
     onDidReceiveNotificationResponse: (NotificationResponse response) {
-      print('Notification tapped: ${response.payload}');
+      _logger.info('Notification tapped: ${response.payload}');
     },
   );
 
@@ -82,8 +90,7 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   void _setupFirebaseMessaging() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data}');
+      _logger.info('FCM message received in foreground', message.data);
 
       if (message.notification != null) {
         _showNotification(
@@ -94,7 +101,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('Message clicked!');
+      _logger.info('FCM message clicked', message.data);
       // Navigate to specific screen based on message data
     });
   }

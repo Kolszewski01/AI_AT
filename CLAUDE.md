@@ -1,17 +1,18 @@
 # AI TRADING SYSTEM - DEVELOPER RULES
 
-> **CLAUDE: PRZECZYTAJ TO NAJPIERW!**
+> **CLAUDE: Wersjonowanie tego pliku**
 >
-> Zanim odpowiesz na COKOLWIEK (nawet "cześć"), MUSISZ wykonać:
-> ```bash
-> git log -1 --format="%H"
-> ```
-> Porównaj z: `f0df2c1c23531bda31eb177dfad6446f4e8928d8`
+> Ten plik zawiera "esencję" projektu - strukturę, reguły, komendy.
+> **Aktualizuj TYLKO gdy zmienia się:**
+> - Struktura katalogów projektu
+> - Nowe/usunięte endpointy API
+> - Nowe/usunięte komendy npm
+> - Kluczowe zależności lub konfiguracja
+> - Reguły deweloperskie (CORE DIRECTIVE)
 >
-> - **RÓŻNE?** → Wykonaj `git log f0df2c1..HEAD --oneline` i `git diff f0df2c1..HEAD --stat`, przejrzyj zmiany, zaktualizuj CLAUDE.md, zaktualizuj hash powyżej.
-> - **TAKIE SAME?** → OK, kontynuuj normalnie.
+> **NIE aktualizuj przy:** bugfixach, refaktoringu, zmianach w logice biznesowej.
 >
-> To jest OBOWIĄZKOWE. Nie pomijaj tego kroku.
+> Wersja esencji: **1.1.0** (2025-11-29)
 
 ---
 
@@ -71,7 +72,10 @@ backend/app/
 │   └── risk_management.py     # Risk calculations
 ├── core/
 │   ├── config.py              # Pydantic settings
-│   └── security.py            # JWT auth
+│   ├── security.py            # JWT auth
+│   ├── logger.py              # Centralized logging
+│   ├── error_middleware.py    # HTTP error logging middleware
+│   └── alert_notifier.py      # Telegram/Discord alerts (prepared)
 ├── database/
 │   ├── connection.py          # PostgreSQL pool
 │   ├── redis_cache.py         # Redis caching
@@ -108,6 +112,7 @@ backend/app/
 | `/api/v1/news/*` | News feed, sentiment |
 | `/api/v1/backtest/*` | Run backtests |
 | `/api/v1/risk/*` | Position sizing, risk metrics |
+| `/api/v1/errors/*` | Client error reporting (desktop/mobile) |
 | `/ws` | WebSocket real-time stream |
 
 ### Key Dependencies
@@ -117,6 +122,20 @@ backend/app/
 - **TA:** TA-Lib 0.6.8 (requires system lib)
 - **NLP:** transformers, torch, LangChain
 - **Alerts:** python-telegram-bot, discord-webhook, twilio, gTTS
+
+### Logging System
+- **Backend:** `app/core/logger.py` - centralized logging with rotating files
+  - Logs: `backend/logs/app.log`, `backend/logs/errors.log`
+  - Middleware: auto-logs HTTP errors and slow requests (>5s)
+- **Desktop:** `src/utils/logger.py` - local + remote error reporting
+  - Logs: `desktop_app/logs/app.log`, `desktop_app/logs/errors.log`
+  - Errors sent to backend: `POST /api/v1/errors/report`
+- **Mobile:** `lib/utils/app_logger.dart` - console + file + remote
+  - Uses `logger` package, errors sent to backend
+
+### Alert Notifications (prepared for future)
+- `app/core/alert_notifier.py` - ready for Telegram/Discord
+- To enable: set `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` or `DISCORD_WEBHOOK_URL` in `.env`
 
 ### Known Issues
 - **Yahoo Finance rate limiting:** `market_data.py` has `AdaptiveRateLimitedCache`
