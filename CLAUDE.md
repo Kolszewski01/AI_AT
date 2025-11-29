@@ -6,9 +6,9 @@
 > ```bash
 > git log -1 --format="%H"
 > ```
-> Porównaj z: `61fe657bf8fb78afcfb4d7a99c89a2ed75345ee2`
+> Porównaj z: `f0df2c1c23531bda31eb177dfad6446f4e8928d8`
 >
-> - **RÓŻNE?** → Wykonaj `git log 61fe657..HEAD --oneline` i `git diff 61fe657..HEAD --stat`, przejrzyj zmiany, zaktualizuj CLAUDE.md, zaktualizuj hash powyżej.
+> - **RÓŻNE?** → Wykonaj `git log f0df2c1..HEAD --oneline` i `git diff f0df2c1..HEAD --stat`, przejrzyj zmiany, zaktualizuj CLAUDE.md, zaktualizuj hash powyżej.
 > - **TAKIE SAME?** → OK, kontynuuj normalnie.
 >
 > To jest OBOWIĄZKOWE. Nie pomijaj tego kroku.
