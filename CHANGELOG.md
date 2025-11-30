@@ -1,5 +1,13 @@
 
 
+# [0.4.0](https://github.com/Kolszewski01/AI_AT/compare/v...v) (2025-11-30)
+
+
+### Features
+
+* **mobile:** configure Firebase Cloud Messaging for push notifications ([31c9d17](https://github.com/Kolszewski01/AI_AT/commit/31c9d1780d2debbfabe57475e4470540be1037a6))
+* **web:** implement SvelteKit web application ([fb83980](https://github.com/Kolszewski01/AI_AT/commit/fb83980c4a349d7ccf5ff31699ddf2074bdfd352))
+
 # [0.3.0](https://github.com/Kolszewski01/AI_AT/compare/v...v) (2025-11-30)
 
 
