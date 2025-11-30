@@ -14,7 +14,9 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# Python lib folders (but not mobile_app/lib which is Flutter source)
+/lib/
+/desktop_app/lib/
 lib64/
 parts/
 sdist/

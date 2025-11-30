@@ -65,7 +65,6 @@ lib/generated_plugin_registrant.dart
 .DS_Store
 Thumbs.db
 
-# Firebase
+# Firebase (keep firebase_options.dart tracked - it's part of the project config)
 **/google-services.json
 **/GoogleService-Info.plist
-firebase_options.dart

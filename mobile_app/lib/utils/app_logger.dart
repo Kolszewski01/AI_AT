@@ -2,7 +2,7 @@
 ///
 /// Features:
 /// - Console logging with pretty formatting
-/// - File logging for errors (persistent)
+/// - File logging for errors (persistent) - mobile/desktop only
 /// - Remote error reporting to backend
 ///
 /// Usage:
@@ -17,12 +17,13 @@ library;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
-import 'package:path_provider/path_provider.dart';
+
+// Conditional imports for platform-specific code
+import 'app_logger_io.dart' if (dart.library.html) 'app_logger_web.dart' as platform;
 
 /// App version for error reports
 const String appVersion = '1.0.0';
@@ -36,58 +37,12 @@ final Logger _prettyLogger = Logger(
     methodCount: 2,
     errorMethodCount: 8,
     lineLength: 120,
-    colors: true,
+    colors: !kIsWeb, // Colors don't work in web console
     printEmojis: true,
     dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
   ),
   level: kDebugMode ? Level.debug : Level.info,
 );
-
-/// File output for persistent error logs
-class _FileLogOutput extends LogOutput {
-  File? _logFile;
-  IOSink? _sink;
-  bool _initialized = false;
-
-  Future<void> _init() async {
-    if (_initialized) return;
-
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final logDir = Directory('${directory.path}/logs');
-      if (!await logDir.exists()) {
-        await logDir.create(recursive: true);
-      }
-
-      _logFile = File('${logDir.path}/errors.log');
-      _sink = _logFile!.openWrite(mode: FileMode.append);
-      _initialized = true;
-    } catch (e) {
-      debugPrint('Failed to initialize file logger: $e');
-    }
-  }
-
-  @override
-  void output(OutputEvent event) async {
-    await _init();
-
-    if (_sink == null) return;
-
-    // Only write errors to file
-    if (event.level.index >= Level.error.index) {
-      final timestamp = DateTime.now().toIso8601String();
-      for (final line in event.lines) {
-        _sink!.writeln('$timestamp | $line');
-      }
-      await _sink!.flush();
-    }
-  }
-
-  Future<void> dispose() async {
-    await _sink?.flush();
-    await _sink?.close();
-  }
-}
 
 /// Remote error reporter - sends errors to backend
 class _RemoteErrorReporter {
@@ -118,11 +73,7 @@ class _RemoteErrorReporter {
       'module': module,
       'function': function,
       'timestamp': DateTime.now().toUtc().toIso8601String(),
-      'device_info': {
-        'platform': Platform.operatingSystem,
-        'os_version': Platform.operatingSystemVersion,
-        'dart_version': Platform.version.split(' ').first,
-      },
+      'device_info': platform.getDeviceInfo(),
       'user_context': context,
     };
 
@@ -161,7 +112,6 @@ class _RemoteErrorReporter {
 /// Main application logger class
 class AppLogger {
   final String module;
-  static final _fileOutput = _FileLogOutput();
   static final _remoteReporter = _RemoteErrorReporter();
 
   AppLogger(this.module);
@@ -196,16 +146,8 @@ class AppLogger {
       stackTrace: stackTrace,
     );
 
-    // Write to file
-    final fileEvent = OutputEvent(
-      Level.error,
-      [
-        '[$module] $message',
-        if (error != null) 'Error: $error',
-        if (stackTrace != null) 'Stack: $stackTrace',
-      ],
-    );
-    _fileOutput.output(fileEvent);
+    // Write to file (mobile/desktop only)
+    platform.writeToLogFile('ERROR', module, message, error, stackTrace);
 
     // Send to backend
     _remoteReporter.reportError(
@@ -234,16 +176,8 @@ class AppLogger {
       stackTrace: stackTrace,
     );
 
-    // Write to file
-    final fileEvent = OutputEvent(
-      Level.fatal,
-      [
-        '[$module] CRITICAL: $message',
-        if (error != null) 'Error: $error',
-        if (stackTrace != null) 'Stack: $stackTrace',
-      ],
-    );
-    _fileOutput.output(fileEvent);
+    // Write to file (mobile/desktop only)
+    platform.writeToLogFile('CRITICAL', module, message, error, stackTrace);
 
     // Send to backend
     _remoteReporter.reportError(
@@ -272,7 +206,7 @@ class AppLogger {
 
   /// Clean up resources
   static Future<void> dispose() async {
-    await _fileOutput.dispose();
+    await platform.disposeFileLogger();
   }
 }
 
